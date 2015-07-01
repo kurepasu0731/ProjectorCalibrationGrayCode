@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<image_width>0</image_width>
+<image_height>0</image_height>
+<alpha>1.</alpha>
+<beta>0.</beta>
+<internal_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    0. 0. 0. 0. 0. 0. 0. 0. 0.</data></internal_matrix>
+<perspective_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>4</cols>
+  <dt>d</dt>
+  <data>
+    6.4561792049556121e-001 4.9124689755805619e-002
+    -2.7163070334793721e-001 2.3299047981048461e-002
+    -2.7242865265081594e-002 6.7127962482790293e-001
+    -2.3599413134956712e-001 2.9615220950321021e-002
+    -4.9289935937187105e-006 4.0031074868445045e-005
+    -3.9977947951457107e-004 -1.0992978711556805e-004</data></perspective_matrix>
+<translational_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>1</cols>
+  <dt>d</dt>
+  <data>
+    0. 0. 0.</data></translational_matrix>
+<rotation_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    0. 0. 0. 0. 0. 0. 0. 0. 0.</data></rotation_matrix>
+<distortion_coefficients type_id="opencv-matrix">
+  <rows>1</rows>
+  <cols>5</cols>
+  <dt>d</dt>
+  <data>
+    0. 0. 0. 0. 0.</data></distortion_coefficients>
+</opencv_storage>
