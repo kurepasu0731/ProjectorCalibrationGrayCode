@@ -51,6 +51,8 @@ int main()
 	cv::Mat src2 = cv::imread("./geo.bmp",1); //幾何補正後の見えたいカメラ画像(square.cpp/.hで作る)
 	cv::Mat dst;
 
+
+	//0->1->2->3 or 6->2->3
 	printf("0：グレイコード投影&二値化\n");
 	printf("1：対応付け\n");
 	printf("2：パラメータ推定(6 points algolism)\n");
@@ -70,6 +72,7 @@ int main()
 		printf("====================\n");
 		printf("数字を入力してください....\n");
 		int command;
+		int current;
 
 		// 白い画像を全画面で投影（撮影環境を確認しやすくするため）
 		//メインループ
@@ -143,8 +146,7 @@ int main()
 
 		case '6':
 			cout << GRAYCODE_NUM << "回投影します。\n毎投影後、any keyで次に進めてください." << endl;
-			int current = 0;
-			int key = 0;
+			current = 0;
 			while(current < GRAYCODE_NUM)
 			{
 				current++;
