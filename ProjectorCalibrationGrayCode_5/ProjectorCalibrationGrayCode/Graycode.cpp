@@ -944,54 +944,6 @@ void GRAYCODE::get_hundred_points(vector<Point2d>& calib_p, vector<Point3d>& cal
 	}
 }
 
-
-/***********************************
-************ myParam.h **************
-************************************/
-Params GRAYCODE::loadParams(const string& filename){
-	Params re;
-
-	FileStorage fs(filename, FileStorage::READ);
-	FileNode node(fs.fs, NULL);
-
-	cv::read(node["perspective_matrix"], re.perspectiveMat);
-	cv::read(node["internal_matrix"], re.internalMat);
-	cv::read(node["translational_matrix"], re.translationalMat);
-	cv::read(node["rotation_matrix"], re.rotationMat);
-	cv::read(node["distortion_coefficients"], re.distCoffs);
-
-	re.imageSize.width = node["image_width"];
-	re.imageSize.height = node["image_height"];
-
-	re.alpha = node["alpha"];
-	re.beta = node["beta"];
-
-	return re;
-}
-
-void GRAYCODE::saveCameraParams(const string& filename, Params param){
-	if(param.distCoffs.data == NULL) param.distCoffs = Mat::zeros(1, 5, CV_64F);
-	if(param.internalMat.data == NULL) param.internalMat = Mat::zeros(3,3,CV_64F);
-	if(param.perspectiveMat.data == NULL) param.perspectiveMat = Mat::zeros(3,4,CV_64F);
-	if(param.rotationMat.data == NULL) param.rotationMat = Mat::zeros(3,3,CV_64F);
-	if(param.translationalMat.data == NULL) param.translationalMat = Mat::zeros(3,1,CV_64F);
-
-
-	FileStorage fs(filename, FileStorage::WRITE);
-	
-	write(fs, "image_width", param.imageSize.width);
-	write(fs, "image_height", param.imageSize.height);
-	write(fs, "alpha", param.alpha);
-	write(fs, "beta", param.beta);
-
-	fs << "internal_matrix" << param.internalMat;
-	fs << "perspective_matrix" << param.perspectiveMat;
-	fs << "translational_matrix" << param.translationalMat;
-	fs << "rotation_matrix" << param.rotationMat;
-	fs << "distortion_coefficients" << param.distCoffs;
-}
-
-
 //pointsを平面フィッティング
 double GRAYCODE::PlaneFit(vector<Point3d>& points, Mat& X, double* D)
 {
@@ -1045,6 +997,83 @@ double GRAYCODE::PlaneFit(vector<Point3d>& points, Mat& X, double* D)
 
 		return minEigenvalue;
 }
+
+/***********************************
+** 対応点保存 **
+************************************/
+void GRAYCODE::save_g_worldPointInlierSet()
+{
+	FileStorage fs("../g_worldPointInlierSet.xml", FileStorage::WRITE);
+
+	write(fs, "points", g_worldPointInlierSet);
+
+	cout << "points saved." << endl;
+
+}
+
+void GRAYCODE::load_g_worldPointInlierSet()
+{
+	FileStorage fs("../g_worldPointInlierSet.xml", FileStorage::READ);
+	FileNode node(fs.fs, NULL);
+
+	vector<Point3d> loadresult;
+
+	read(node["points"], loadresult);
+
+	cout << "file value: " << loadresult[loadresult.size()-1].z << endl;
+	cout << "real value: " << g_worldPointInlierSet[g_worldPointInlierSet.size() - 1].z << endl;
+
+	cout << "loaded." << endl;
+
+}
+
+/***********************************
+************ myParam.h **************
+************************************/
+Params GRAYCODE::loadParams(const string& filename){
+	Params re;
+
+	FileStorage fs(filename, FileStorage::READ);
+	FileNode node(fs.fs, NULL);
+
+	cv::read(node["perspective_matrix"], re.perspectiveMat);
+	cv::read(node["internal_matrix"], re.internalMat);
+	cv::read(node["translational_matrix"], re.translationalMat);
+	cv::read(node["rotation_matrix"], re.rotationMat);
+	cv::read(node["distortion_coefficients"], re.distCoffs);
+
+	re.imageSize.width = node["image_width"];
+	re.imageSize.height = node["image_height"];
+
+	re.alpha = node["alpha"];
+	re.beta = node["beta"];
+
+	return re;
+}
+
+void GRAYCODE::saveCameraParams(const string& filename, Params param){
+	if(param.distCoffs.data == NULL) param.distCoffs = Mat::zeros(1, 5, CV_64F);
+	if(param.internalMat.data == NULL) param.internalMat = Mat::zeros(3,3,CV_64F);
+	if(param.perspectiveMat.data == NULL) param.perspectiveMat = Mat::zeros(3,4,CV_64F);
+	if(param.rotationMat.data == NULL) param.rotationMat = Mat::zeros(3,3,CV_64F);
+	if(param.translationalMat.data == NULL) param.translationalMat = Mat::zeros(3,1,CV_64F);
+
+
+	FileStorage fs(filename, FileStorage::WRITE);
+	
+	write(fs, "image_width", param.imageSize.width);
+	write(fs, "image_height", param.imageSize.height);
+	write(fs, "alpha", param.alpha);
+	write(fs, "beta", param.beta);
+
+	fs << "internal_matrix" << param.internalMat;
+	fs << "perspective_matrix" << param.perspectiveMat;
+	fs << "translational_matrix" << param.translationalMat;
+	fs << "rotation_matrix" << param.rotationMat;
+	fs << "distortion_coefficients" << param.distCoffs;
+}
+
+
 
 
 /***********************************

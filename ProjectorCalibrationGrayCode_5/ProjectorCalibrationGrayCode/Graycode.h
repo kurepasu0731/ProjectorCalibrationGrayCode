@@ -111,6 +111,10 @@ public:
 	//// 入力画像をカメラ撮影領域に変形
 	void transport_projector_camera(cv::Mat &src, cv::Mat &dst);
 
+	//対応点を形式で保存
+	void save_g_worldPointInlierSet();
+	void load_g_worldPointInlierSet();
+
 private:
 	// ウィンドウネーム
 	char* GC;
