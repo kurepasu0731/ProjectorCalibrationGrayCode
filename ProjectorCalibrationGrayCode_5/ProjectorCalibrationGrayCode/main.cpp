@@ -40,7 +40,7 @@
 #define IMAGE_WIDTH (1280)
 #define IMAGE_HEIGHT (800)
 #define RADIUS (2)
-#define GRAYCODE_NUM (10) //グレイコードを繰り返し投影する回数
+#define GRAYCODE_NUM (5) //グレイコードを繰り返し投影する回数
 
 int main()
 {
