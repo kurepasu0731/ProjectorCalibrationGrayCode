@@ -82,6 +82,27 @@ public:
 	int image_idx; //撮影枚数
 	std::string outdir; //保存フォルダ
 
+
+	//**平滑化関連**/
+	//Depthの移動平均法による精度向上
+    int nFrame;      // 移動平均を行うフレーム数 30なら30FPSなので１秒分  100フレーム位が良好
+    double Kd; // 移動平均を除算を使わず乗算で求めるための係数
+    int Dx;          // 画面イメージの水平方向画素数
+    int Dy;          // 画面イメージの垂直方向画素数
+    int dByte;         // XRGB形式なので４バイト
+    int dPixels; // 1フレーム分の画素数
+    int ptr;                 // 移動平均を行う為のデータ格納ポインタ
+
+	//vector<UINT16> DataIn;       // Kinectからデプスを取得するためのバッファ（１フレーム分）[dPixels] = depthBuffer
+    vector<UINT16> nDepthBuffer; // nFrame分のデプスバッファ [dPixels * nFrame]
+    long *Sum; // nFrame分の移動加算値を格納する為のバッファ[dPixels]
+
+	//平均結果のDepth
+	unsigned short* aveDepthData;
+	
+	//平滑化データあるかどうかのフラグ
+	bool hasSmooth;
+
 	void init();
 	void initColorFrame();
 	void initDepthFrame();
@@ -113,5 +134,11 @@ public:
 	double getRawDepthValue(UINT16 depthmillimeter);
 
 	void getDepthCameraIntrinsics(CameraIntrinsics cameraIntrinsics);
+
+	//深度平滑化
+	void frame_smoothing();
+
+	void FIFOFilter();
+
 
 };

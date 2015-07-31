@@ -22,6 +22,18 @@ myKinect::myKinect()
 
 	image_idx = 0;
 	outdir = "./capture";
+
+	//**平滑化関連**/
+    nFrame = 100;     
+    Kd = 1 / (double)nFrame;
+    Dx = 512;
+    Dy = 424;
+    dByte = 4;
+    dPixels = Dx * Dy;
+	ptr = 0;                 
+	Sum = new long[dPixels]; 
+	aveDepthData = new ushort[dPixels];
+	hasSmooth = false;
 }
 
 //デストラクタ
@@ -108,6 +120,11 @@ void myKinect::initDepthFrame(){
 	Mat tmp_rawBuffer(depthWidth, depthHeight, CV_16UC1);
 	rawBuffer = tmp_rawBuffer.clone();
 	//rawBuffer->create(depthWidth, depthHeight);
+
+	//**平滑化関連**/
+	for (int i = 0; i < dPixels; i++) { Sum[i] = 0; } //移動加算バッファを０クリア
+	nDepthBuffer.resize(dPixels * nFrame);
+
 }
 
 void myKinect::updateIRFrame(){
@@ -377,7 +394,15 @@ void myKinect::coordinateColorToCamera(Point camPro[PROJECTOR_HEIGHT][PROJECTOR_
 									   Point3f proWorld[PROJECTOR_HEIGHT][PROJECTOR_WIDTH], int* pointnum)
 {
 	cameraPoints.resize(colorWidth * colorHeight);
-	ERROR_CHECK(coordinateMapper->MapColorFrameToCameraSpace(depthBuffer.size(), &depthBuffer[0], cameraPoints.size(), &cameraPoints[0]));
+
+	//平滑化済みならば、そのデータを使って3次元座標を取得する
+	if(hasSmooth)
+	{
+		ERROR_CHECK(coordinateMapper->MapColorFrameToCameraSpace(depthWidth * depthHeight, (UINT16*)aveDepthData, cameraPoints.size(), &cameraPoints[0]));
+	}else
+	{
+		ERROR_CHECK(coordinateMapper->MapColorFrameToCameraSpace(depthBuffer.size(), &depthBuffer[0], cameraPoints.size(), &cameraPoints[0]));
+	}
 
 	for(int i = 0; i < PROJECTOR_HEIGHT; i++){
 		for(int j = 0; j < PROJECTOR_WIDTH; j++){
@@ -393,7 +418,7 @@ void myKinect::coordinateColorToCamera(Point camPro[PROJECTOR_HEIGHT][PROJECTOR_
 				int index = camY * colorWidth + camX;
 				Point3f *w = new Point3f(cameraPoints[index].X, cameraPoints[index].Y, cameraPoints[index].Z);
 				//深度がとれていない点にはエラー値-1
-				if(w->z <= 0 || w->z > 8.0 ) {
+				if(w->z <= 0.4 || w->z > 8.0 ) {
 					w->x = 0; w->y = 0; w->z = -1;
 				}else{
 					(*pointnum)++;//有効な点をカウント
@@ -409,5 +434,46 @@ void myKinect::coordinateColorToCamera(Point camPro[PROJECTOR_HEIGHT][PROJECTOR_
 			}
 		}
 	}
+}
+
+//**平滑化関連**/
+void myKinect::FIFOFilter()
+{
+    int j = dPixels * ptr;
+    for (int i = 0; i < dPixels; i++)
+    {
+		Sum[i] += (long)depthBuffer[i] - (long)nDepthBuffer[j + i]; // 移動加算値Sum[i]の変化成分のみ修正
+		nDepthBuffer[j + i] = depthBuffer[i]; // 新規データDataIn[i]をバッファに格納
+		//cout << "Sum[" << i << "]: " << Sum[i] << endl;
+
+    }
+    ptr++;
+    if (ptr == nFrame) { ptr = 0; } //【バッファポインタ更新】
+}
+
+void myKinect::frame_smoothing()
+{
+	int frame = 0;
+
+	cout << nFrame << "フレーム取得します..." << endl;
+
+	while(frame < nFrame)
+	{
+		cout << frame << "フレーム目." << endl;
+
+		updateDepthFrame();
+		//移動平均
+		FIFOFilter();
+		//除算->データ格納
+		for(int i = 0; i < dPixels; i++)
+		{
+			aveDepthData[i] = (unsigned short)(Sum[i]*Kd); //移動加算値Sum[i]から移動平均値kを求める
+		}
+
+		frame++;
+	}
+
+	hasSmooth = true;
+	cout << "平滑化完了." << endl;
 }
 

@@ -115,6 +115,9 @@ public:
 	void save_g_worldPointInlierSet();
 	void load_g_worldPointInlierSet();
 
+	//深度平滑化を呼び出す
+	void call_smoothing();
+
 private:
 	// ウィンドウネーム
 	char* GC;

@@ -749,12 +749,12 @@ Point2f GRAYCODE::ProjectTo(Params pro_param, Point3f world_point)
 	dst.x = mult_result.at<double>(0,0) / mult_result.at<double>(2,0);
 	dst.y = mult_result.at<double>(1,0) / mult_result.at<double>(2,0);
 
-	//‡A
-	Mat cameraMat = pro_param.perspectiveMat;
-	dst.x = (cameraMat.at<double>(0,0)*world_point.x + cameraMat.at<double>(0,1)*world_point.y + cameraMat.at<double>(0,2)*world_point.z + cameraMat.at<double>(0,3))
-		/ (cameraMat.at<double>(2,0)*world_point.x + cameraMat.at<double>(2,1)*world_point.y + cameraMat.at<double>(2,2)*world_point.z + cameraMat.at<double>(2,3));
-	dst.y = (cameraMat.at<double>(1,0)*world_point.x + cameraMat.at<double>(1,1)*world_point.y + cameraMat.at<double>(1,2)*world_point.z + cameraMat.at<double>(1,3))
-		/ (cameraMat.at<double>(2,0)*world_point.x + cameraMat.at<double>(2,1)*world_point.y + cameraMat.at<double>(2,2)*world_point.z + cameraMat.at<double>(2,3));
+	////‡A
+	//Mat cameraMat = pro_param.perspectiveMat;
+	//dst.x = (cameraMat.at<double>(0,0)*world_point.x + cameraMat.at<double>(0,1)*world_point.y + cameraMat.at<double>(0,2)*world_point.z + cameraMat.at<double>(0,3))
+	//	/ (cameraMat.at<double>(2,0)*world_point.x + cameraMat.at<double>(2,1)*world_point.y + cameraMat.at<double>(2,2)*world_point.z + cameraMat.at<double>(2,3));
+	//dst.y = (cameraMat.at<double>(1,0)*world_point.x + cameraMat.at<double>(1,1)*world_point.y + cameraMat.at<double>(1,2)*world_point.z + cameraMat.at<double>(1,3))
+	//	/ (cameraMat.at<double>(2,0)*world_point.x + cameraMat.at<double>(2,1)*world_point.y + cameraMat.at<double>(2,2)*world_point.z + cameraMat.at<double>(2,3));
 
 	 return dst;
 }
@@ -1016,16 +1016,21 @@ void GRAYCODE::load_g_worldPointInlierSet()
 	FileStorage fs("../g_worldPointInlierSet.xml", FileStorage::READ);
 	FileNode node(fs.fs, NULL);
 
-	vector<Point3d> loadresult;
-
-	read(node["points"], loadresult);
-
-	cout << "file value: " << loadresult[loadresult.size()-1].z << endl;
-	cout << "real value: " << g_worldPointInlierSet[g_worldPointInlierSet.size() - 1].z << endl;
+	read(node["points"], g_worldPointInlierSet);
 
 	cout << "loaded." << endl;
 
 }
+
+/***********************************
+** [“x•½ŠŠ‰» **
+************************************/
+
+void GRAYCODE::call_smoothing()
+{
+	kinect->frame_smoothing();
+}
+
 
 /***********************************
 ************ myParam.h **************

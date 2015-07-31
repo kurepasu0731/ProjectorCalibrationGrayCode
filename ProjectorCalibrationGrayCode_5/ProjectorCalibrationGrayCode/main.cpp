@@ -40,7 +40,7 @@
 #define IMAGE_WIDTH (1280)
 #define IMAGE_HEIGHT (800)
 #define RADIUS (2)
-#define GRAYCODE_NUM (5) //グレイコードを繰り返し投影する回数
+#define GRAYCODE_NUM (14) //グレイコードを繰り返し投影する回数
 
 int main()
 {
@@ -62,6 +62,7 @@ int main()
 	printf("6: GrayCode 連続投影開始\n");
 	printf("7: 対応点保存\n");
 	printf("8: 対応点読み込み\n");
+	printf("9: 平滑化深度取得\n");
 	printf("w：待機時に白画像を投影するかしないか\n");
 	printf("\n");
 
@@ -180,6 +181,10 @@ int main()
 
 		case '8':
 			gc->load_g_worldPointInlierSet();
+			break;
+
+		case '9':
+			gc->call_smoothing();
 			break;
 
 		case 'w':
